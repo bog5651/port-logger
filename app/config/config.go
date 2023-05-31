@@ -5,7 +5,7 @@ import (
 )
 
 type Config struct {
-	Host string `env:"HOST" envDefault:"0.0.0.0" json:"host"`
+	Host string `env:"HOST" envDefault:"127.0.0.1" json:"host"`
 	Port string `env:"PORT" envDefault:"27312" json:"port"`
 }
 
