@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"crypto/aes"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"net"
+	"os"
 	"port-logger/pkg/logger"
+	"time"
 )
 
 //	func main() {
@@ -36,9 +39,9 @@ var InDataStr = "62E8D8CDB16A3BBB02B4DE942E73B12D"
 var NeedDataStr = "000000092E2E2F2E2E2F2E2E2F000000"
 var NeedSHA1Str = "3F875C2043FD1AB1E2FAE372F4E36092A0215C79"
 
-var key = []byte{0, 0, 0, 0xF6, 0x0B, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var key = []byte{0, 0, 0, 0x7C, 0x0C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
-//stopped at  0000006B0C000000000000000000000000000000000000000000000000000000
+//stopped at  0000007C0C000000000000000000000000000000000000000000000000000000
 
 func inc(index int) error {
 	if key[index] == 255 {
@@ -48,9 +51,9 @@ func inc(index int) error {
 		}
 		key[index] = 0
 		err := inc(index + 1)
-		if index == 2 {
-			logger.Infof(context.Background(), "inc key %X", key)
-		}
+		//if index == 2 {
+		//	logger.Infof(context.Background(), "reach key %X", key)
+		//}
 		return err
 	} else {
 		key[index] = key[index] + 1
@@ -58,14 +61,46 @@ func inc(index int) error {
 	}
 }
 
+func KeyTimer() {
+	ticker := time.NewTicker(5 * time.Second)
+
+	for {
+		select {
+		case <-ticker.C:
+			logger.Infof(context.Background(), "[%d] reach key %X", time.Now().Unix(), key)
+		}
+	}
+}
+
 func main() {
 	ctx := context.Background()
+
+	if len(os.Args) < 2 || len(os.Args) > 3 {
+		logger.Criticalf(ctx, "Use exe [from hex]")
+		return
+	}
+	from := os.Args[1]
+
+	fromKey, err := hex.DecodeString(from)
+	if err != nil {
+		logger.Criticalf(ctx, "invalid from")
+		return
+	}
+
+	if len(fromKey) != 32 {
+		logger.Criticalf(ctx, "invalid from len")
+		return
+	}
+	key = fromKey
+	logger.Infof(ctx, "Starting from hex %X", key)
 
 	l, e := big.NewInt(32), big.NewInt(255)
 
 	l.Exp(l, e, nil)
 
-	logger.Infof(ctx, "len %s", l.String())
+	go KeyTimer()
+
+	//logger.Infof(ctx, "len %s", l.String())
 
 	one := big.NewInt(1)
 
