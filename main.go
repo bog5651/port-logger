@@ -36,7 +36,9 @@ var InDataStr = "62E8D8CDB16A3BBB02B4DE942E73B12D"
 var NeedDataStr = "000000092E2E2F2E2E2F2E2E2F000000"
 var NeedSHA1Str = "3F875C2043FD1AB1E2FAE372F4E36092A0215C79"
 
-var key = []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var key = []byte{0, 0, 0, 0xF6, 0x0B, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+//stopped at  0000006B0C000000000000000000000000000000000000000000000000000000
 
 func inc(index int) error {
 	if key[index] == 255 {
